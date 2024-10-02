@@ -1,1 +1,39 @@
-<div id="vaderwidget"><iframe src='https://xn--vder24-bua.se/index.php/vader-widget/?widgettype=black&widgetcity=åled' title='Väderwidget' style='height:504px; min-width:1176px; width:100%; max-width:100%;' name='weatheriFrame' scrolling='0' frameborder='0' ></iframe><span><a style="font-size:11px;color:#777;position:absolute;left:20px;margin-top:66px;" href="https://väder24.se/">Väder24</a></span></div>
+<script>
+        (function(d, s, id) {
+            if (d.getElementById(id)) {
+                if (window.__TOMORROW__) {
+                    window.__TOMORROW__.renderWidget();
+                }
+                return;
+            }
+            const fjs = d.getElementsByTagName(s)[0];
+            const js = d.createElement(s);
+            js.id = id;
+            js.src = "https://www.tomorrow.io/v1/widget/sdk/sdk.bundle.min.js";
+
+            fjs.parentNode.insertBefore(js, fjs);
+        })(document, 'script', 'tomorrow-sdk');
+        </script>
+
+        <div class="tomorrow"
+           data-location-id="104005"
+           data-language="SV"
+           data-unit-system="METRIC"
+           data-skin="light"
+           data-widget-type="upcoming"
+           style="padding-bottom:22px;position:relative;"
+        >
+          <a
+            href="https://www.tomorrow.io/weather-api/"
+            rel="nofollow noopener noreferrer"
+            target="_blank"
+            style="position: absolute; bottom: 0; transform: translateX(-50%); left: 50%;"
+          >
+            <img
+              alt="Powered by the Tomorrow.io Weather API"
+              src="https://weather-website-client.tomorrow.io/img/powered-by.svg"
+              width="1177"
+              height="504"
+            />
+          </a>
+        </div>
