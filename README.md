@@ -52,7 +52,7 @@
 <script>
     const lat = 56.743407;
     const lon = 12.950762;
-    const apiKey = 'YOUR_API_KEY_HERE';
+    const apiKey = '2bce8589e4d6e338da17cfefa1de9d53';
     
     fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`)
         .then(response => response.json())
