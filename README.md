@@ -8,7 +8,7 @@
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
             display: flex;
-            justify-content: center 0px;  /* Horizontally center content */
+            justify-content: center 20px;  /* Horizontally center content */
             align-items: flex-start;  /* Align content at the top */
             padding-top: 0px;  /* Adjust this value to control how high the content appears */
             height: 0vh;
