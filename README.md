@@ -59,6 +59,7 @@
         const lat = 56.8667;  // Latitude for Åled, Sweden
         const lon = 12.8917;  // Longitude for Åled, Sweden
         const apiUrl = `https://api.tomorrow.io/v4/weather/forecast?location=${lat},${lon}&apikey=${apiKey}`;
+        const CACHE_DURATION = 60 * 60 * 1000;  // 1 hour in milliseconds
 
         const emojiMap = {
             '1000': '☀️',  // Clear
@@ -84,21 +85,58 @@
             '8000': '⛈️'   // Thunderstorm
         };
 
-        async function fetchWeather() {
+        // Fetch weather with delay
+        async function fetchWeatherWithRetry(delay) {
             try {
+                await new Promise(resolve => setTimeout(resolve, delay));  // Add delay
                 const response = await fetch(apiUrl);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();
-                console.log('API response:', data);
+                return data;
+            } catch (error) {
+                console.error('Error fetching weather data:', error);
+                return null;
+            }
+        }
 
-                // Set current weather
-                const currentWeather = data.timelines.daily[0].values;  // Today
+        // Save weather data to local storage
+        function saveWeatherToCache(data) {
+            const cacheData = {
+                timestamp: new Date().getTime(),
+                data
+            };
+            localStorage.setItem('weatherData', JSON.stringify(cacheData));
+        }
+
+        // Retrieve weather data from local storage
+        function getWeatherFromCache() {
+            const cacheData = localStorage.getItem('weatherData');
+            if (cacheData) {
+                const parsedData = JSON.parse(cacheData);
+                if (new Date().getTime() - parsedData.timestamp < CACHE_DURATION) {
+                    return parsedData.data;
+                }
+            }
+            return null;
+        }
+
+        async function fetchWeather() {
+            let weatherData = getWeatherFromCache();  // Try to get from cache
+
+            if (!weatherData) {
+                weatherData = await fetchWeatherWithRetry(500);  // Fetch with delay of 500ms
+                if (weatherData) {
+                    saveWeatherToCache(weatherData);  // Save new data to cache
+                }
+            }
+
+            if (weatherData) {
+                const currentWeather = weatherData.timelines.daily[0].values;  // Today
                 const temperature = Math.round(currentWeather.temperatureMax);  // Current temperature
                 let weatherEmoji = emojiMap[currentWeather.weatherCodeMax] || '❓';
 
-                // Check for cloud cover to adjust the emoji
                 const cloudCover = currentWeather.cloudCoverAvg;
                 if (currentWeather.weatherCodeMax === 1000 && cloudCover > 15) {
                     weatherEmoji = emojiMap['1100'];  // Mostly Clear if cloud cover > 15%
@@ -110,16 +148,14 @@
                 document.querySelector('#current-weather .emoji').textContent = weatherEmoji;
                 document.querySelector('#current-weather .description').textContent = 'Nuvarande väder i Åled';
 
-                // Set forecast for tomorrow
-                const tomorrowWeather = data.timelines.daily[1].values;  // Tomorrow
+                const tomorrowWeather = weatherData.timelines.daily[1].values;  // Tomorrow
                 const tomorrowEmoji = emojiMap[tomorrowWeather.weatherCodeMax] || '❓';
-                const tomorrowDate = new Date(data.timelines.daily[1].time).toLocaleDateString('sv-SE', { weekday: 'long' });
+                const tomorrowDate = new Date(weatherData.timelines.daily[1].time).toLocaleDateString('sv-SE', { weekday: 'long' });
 
                 document.querySelector('#forecast').innerHTML = `
                     <p>Imorgon (${tomorrowDate}): ${tomorrowEmoji}</p>
                 `;
-            } catch (error) {
-                console.error('Error fetching weather data:', error);
+            } else {
                 document.querySelector('#current-weather .description').textContent = 'Kunde inte hämta väderdata.';
             }
         }
