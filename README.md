@@ -19,25 +19,25 @@
             padding: 20px;
             border-radius: 10px;
             background-color: #fff;
-            width: 1177px;  /* Set to your required width */
-            height: 504px;  /* Set to your required height */
+            width: 1177px;
+            height: 504px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
         .emoji {
-            font-size: 80px;  /* Adjusted size to fit inside */
+            font-size: 80px;
         }
         .temperature {
-            font-size: 100px;  /* Adjusted size to fit inside */
+            font-size: 100px;
             margin: 0;
         }
         .description {
-            font-size: 24px;  /* Adjusted size for description */
+            font-size: 24px;
         }
         .forecast {
-            font-size: 24px;  /* Adjusted size for forecast */
+            font-size: 24px;
             margin: 0;
         }
     </style>
@@ -96,8 +96,18 @@
                 // Set current weather
                 const currentWeather = data.timelines.daily[0].values;  // Today
                 const temperature = Math.round(currentWeather.temperatureMax);  // Current temperature
+                let weatherEmoji = emojiMap[currentWeather.weatherCodeMax] || '❓';
+
+                // Check for cloud cover to adjust the emoji
+                const cloudCover = currentWeather.cloudCoverAvg;
+                if (currentWeather.weatherCodeMax === 1000 && cloudCover > 25) {
+                    weatherEmoji = emojiMap['1100'];  // Mostly Clear
+                } else if (currentWeather.weatherCodeMax === 1000 && cloudCover > 50) {
+                    weatherEmoji = emojiMap['1101'];  // Partly Cloudy
+                }
+
                 document.querySelector('#current-weather .temperature').textContent = `${temperature}°C`;
-                document.querySelector('#current-weather .emoji').textContent = emojiMap[currentWeather.weatherCodeMax] || '❓';
+                document.querySelector('#current-weather .emoji').textContent = weatherEmoji;
                 document.querySelector('#current-weather .description').textContent = 'Nuvarande väder i Åled';
 
                 // Set forecast for tomorrow
