@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="sv">
 <head>
     <meta charset="UTF-8" />
@@ -8,9 +9,11 @@
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            justify-content: center;  /* Horizontally center content */
+            align-items: flex-start;  /* Align content at the top */
+            padding-top: 5px;  /* Adjust this value to control how high the content appears */
             height: 100vh;
+            margin: 0;
         }
         .weather-widget {
             text-align: center;
