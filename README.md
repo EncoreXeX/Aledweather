@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="sv">
 <head>
     <meta charset="UTF-8" />
@@ -27,7 +26,7 @@
             font-size: 100px;
         }
         .temperature {
-            font-size: 48px;
+            font-size: 120px;  /* Larger size for current temperature */
             margin: 20px 0;
         }
         .forecast {
@@ -93,22 +92,29 @@
                 const data = await response.json();
                 console.log('API response:', data);
 
-                // Use weatherCodeMax to get the weather condition
-                data.timelines.daily.slice(0, 7).forEach(day => {
+                // Set current weather
+                const currentWeather = data.timelines.daily[0].values;
+                const temperature = Math.round(currentWeather.temperatureMax);  // Live current temperature (adjust as needed)
+                document.querySelector('#current-weather .temperature').textContent = `${temperature}°C`;
+                document.querySelector('#current-weather .emoji').textContent = emojiMap[currentWeather.weatherCodeMax] || '❓';
+                document.querySelector('#current-weather .description').textContent = 'Åleds nuvarande väder';
+
+                // Set forecast (remove temperatures, just show emoji and day)
+                const forecastElement = document.getElementById('forecast');
+                forecastElement.innerHTML = ''; // Clear forecast first
+
+                data.timelines.daily.slice(1, 7).forEach(day => {  // Start from tomorrow
                     const forecastDay = document.createElement('div');
                     forecastDay.classList.add('forecast-day');
 
                     const weatherEmoji = emojiMap[day.values.weatherCodeMax] || '❓';  // Use weatherCodeMax
-                    const tempMin = Math.round(day.values.temperatureMin);
-                    const tempMax = Math.round(day.values.temperatureMax);
                     const date = new Date(day.time).toLocaleDateString('sv-SE', { weekday: 'long' });
 
                     forecastDay.innerHTML = `
                         <p>${date}</p>
                         <p class="emoji">${weatherEmoji}</p>
-                        <p>${tempMin}°C / ${tempMax}°C</p>
                     `;
-                    document.getElementById('forecast').appendChild(forecastDay);
+                    forecastElement.appendChild(forecastDay);
                 });
             } catch (error) {
                 console.error('Error fetching weather data:', error);
