@@ -100,10 +100,10 @@
 
                 // Check for cloud cover to adjust the emoji
                 const cloudCover = currentWeather.cloudCoverAvg;
-                if (currentWeather.weatherCodeMax === 1000 && cloudCover > 25) {
-                    weatherEmoji = emojiMap['1100'];  // Mostly Clear
+                if (currentWeather.weatherCodeMax === 1000 && cloudCover > 15) {
+                    weatherEmoji = emojiMap['1100'];  // Mostly Clear if cloud cover > 15%
                 } else if (currentWeather.weatherCodeMax === 1000 && cloudCover > 50) {
-                    weatherEmoji = emojiMap['1101'];  // Partly Cloudy
+                    weatherEmoji = emojiMap['1101'];  // Partly Cloudy if cloud cover > 50%
                 }
 
                 document.querySelector('#current-weather .temperature').textContent = `${temperature}°C`;
