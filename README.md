@@ -11,7 +11,7 @@
             justify-content: center;  /* Horizontally center content */
             align-items: flex-start;  /* Align content at the top */
             padding-top: 0px;  /* Adjust this value to control how high the content appears */
-            height: 50vh;
+            height: 0vh;
             margin: 0;
         }
         .weather-widget {
