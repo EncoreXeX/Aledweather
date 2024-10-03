@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="sv">
 <head>
     <meta charset="UTF-8" />
@@ -14,10 +15,10 @@
         }
         .weather-widget {
             text-align: center;
-            border: 2px solid #ccc;
             padding: 20px;
             border-radius: 10px;
-            background-color: #fff;
+            background: url('/mnt/data/Abstrakt bakgrund.jpg') no-repeat center center;  /* Background image */
+            background-size: cover;  /* Make sure the background covers the entire widget */
             width: 1177px;
             height: 504px;
             box-sizing: border-box;
@@ -31,13 +32,16 @@
         .temperature {
             font-size: 100px;
             margin: 0;
+            color: white;  /* Adjust text color to ensure readability */
         }
         .description {
             font-size: 24px;
+            color: white;  /* Adjust text color to ensure readability */
         }
         .forecast {
             font-size: 24px;
             margin: 0;
+            color: white;  /* Adjust text color to ensure readability */
         }
     </style>
 </head>
@@ -84,53 +88,8 @@
             '8000': '⛈️'   // Thunderstorm
         };
 
-        // Fetch weather with delay
-        async function fetchWeatherWithRetry(delay) {
-            try {
-                await new Promise(resolve => setTimeout(resolve, delay));  // Add delay
-                const response = await fetch(apiUrl);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                console.error('Error fetching weather data:', error);
-                return null;
-            }
-        }
-
-        // Save weather data to local storage
-        function saveWeatherToCache(data) {
-            const cacheData = {
-                timestamp: new Date().getTime(),
-                data
-            };
-            localStorage.setItem('weatherData', JSON.stringify(cacheData));
-        }
-
-        // Retrieve weather data from local storage
-        function getWeatherFromCache() {
-            const cacheData = localStorage.getItem('weatherData');
-            if (cacheData) {
-                const parsedData = JSON.parse(cacheData);
-                if (new Date().getTime() - parsedData.timestamp < CACHE_DURATION) {
-                    return parsedData.data;
-                }
-            }
-            return null;
-        }
-
         async function fetchWeather() {
-            let weatherData = getWeatherFromCache();  // Try to get from cache
-
-            if (!weatherData) {
-                weatherData = await fetchWeatherWithRetry(500);  // Fetch with delay of 500ms
-                if (weatherData) {
-                    saveWeatherToCache(weatherData);  // Save new data to cache
-                }
-            }
-
+            let weatherData = await fetchWeatherWithRetry(500);  // Fetch with delay of 500ms
             if (weatherData) {
                 const currentWeather = weatherData.timelines.daily[0].values;  // Today
                 const temperature = Math.round(currentWeather.temperatureMax);  // Current temperature
@@ -156,6 +115,21 @@
                 `;
             } else {
                 document.querySelector('#current-weather .description').textContent = 'Kunde inte hämta väderdata.';
+            }
+        }
+
+        async function fetchWeatherWithRetry(delay) {
+            try {
+                await new Promise(resolve => setTimeout(resolve, delay));  // Add delay
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error fetching weather data:', error);
+                return null;
             }
         }
 
