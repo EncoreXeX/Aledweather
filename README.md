@@ -93,25 +93,14 @@
                 const data = await response.json();
                 console.log('API response:', data);
 
-                // Log the weather codes to see what Tomorrow.io returns
-                const currentWeather = data.timelines.daily[0].values;
-                console.log('Current weather code:', currentWeather.weatherCode);
-
-                // Assuming temperature is working
-                const temperature = currentWeather.temperature;
-                document.querySelector('#current-weather .temperature').textContent = `${Math.round(temperature)}°C`;
-
-                // Set forecast
-                const forecastElement = document.getElementById('forecast');
-                forecastElement.innerHTML = ''; // Clear forecast first
-
+                // Log the full day.values to inspect its structure
                 data.timelines.daily.slice(0, 7).forEach(day => {
-                    console.log('Forecast weather code:', day.values.weatherCode);  // Log weather codes for each day
+                    console.log('Full day.values:', day.values);  // Log day.values to inspect structure
 
                     const forecastDay = document.createElement('div');
                     forecastDay.classList.add('forecast-day');
 
-                    const weatherEmoji = emojiMap[day.values.weatherCode] || '❓';
+                    const weatherEmoji = emojiMap[day.values.weatherCode] || '❓';  // We will update this after logging
                     const tempMin = Math.round(day.values.temperatureMin);
                     const tempMax = Math.round(day.values.temperatureMax);
                     const date = new Date(day.time).toLocaleDateString('sv-SE', { weekday: 'long' });
@@ -121,7 +110,7 @@
                         <p class="emoji">${weatherEmoji}</p>
                         <p>${tempMin}°C / ${tempMax}°C</p>
                     `;
-                    forecastElement.appendChild(forecastDay);
+                    document.getElementById('forecast').appendChild(forecastDay);
                 });
             } catch (error) {
                 console.error('Error fetching weather data:', error);
