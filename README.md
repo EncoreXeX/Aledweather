@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="sv">
 <head>
     <meta charset="UTF-8" />
@@ -103,17 +104,26 @@
                 const forecastElement = document.getElementById('forecast');
                 forecastElement.innerHTML = ''; // Clear forecast first
 
-                data.timelines.daily.slice(1, 7).forEach(day => {  // Start from tomorrow
+                data.timelines.daily.slice(1, 7).forEach((day, index) => {  // Start from tomorrow
+                    console.log(`Day ${index + 2} values:`, day.values);  // Log each day's data to inspect
+
                     const forecastDay = document.createElement('div');
                     forecastDay.classList.add('forecast-day');
 
-                    const weatherEmoji = emojiMap[day.values.weatherCodeMax] || '❓';  // Use weatherCodeMax
-                    const date = new Date(day.time).toLocaleDateString('sv-SE', { weekday: 'long' });
+                    const weatherCode = day.values.weatherCodeMax;
+                    if (weatherCode && emojiMap[weatherCode]) {
+                        const weatherEmoji = emojiMap[weatherCode];
+                        const date = new Date(day.time).toLocaleDateString('sv-SE', { weekday: 'long' });
 
-                    forecastDay.innerHTML = `
-                        <p>${date}</p>
-                        <p class="emoji">${weatherEmoji}</p>
-                    `;
+                        forecastDay.innerHTML = `
+                            <p>${date}</p>
+                            <p class="emoji">${weatherEmoji}</p>
+                        `;
+                    } else {
+                        forecastDay.innerHTML = `
+                            <p>Ingen data</p>
+                        `;
+                    }
                     forecastElement.appendChild(forecastDay);
                 });
             } catch (error) {
