@@ -19,20 +19,26 @@
             padding: 20px;
             border-radius: 10px;
             background-color: #fff;
-            width: 800px;
-            height: 400px;
+            width: 1177px;  /* Set to your required width */
+            height: 504px;  /* Set to your required height */
             box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
         .emoji {
-            font-size: 100px;
+            font-size: 80px;  /* Adjusted size to fit inside */
         }
         .temperature {
-            font-size: 120px;  /* Larger size for current temperature */
-            margin: 20px 0;
+            font-size: 100px;  /* Adjusted size to fit inside */
+            margin: 0;
+        }
+        .description {
+            font-size: 24px;  /* Adjusted size for description */
         }
         .forecast {
-            font-size: 24px;  /* Smaller size for tomorrow's forecast */
-            margin-top: 20px;
+            font-size: 24px;  /* Adjusted size for forecast */
+            margin: 0;
         }
     </style>
 </head>
