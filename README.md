@@ -19,8 +19,8 @@
             padding: 20px;
             border-radius: 10px;
             background-color: #fff;
-            width: 1177px;
-            height: 504px;
+            width: 800px;
+            height: 400px;
             box-sizing: border-box;
         }
         .emoji {
@@ -31,15 +31,8 @@
             margin: 20px 0;
         }
         .forecast {
-            display: flex;
-            justify-content: space-between;
-        }
-        .forecast-day {
-            text-align: center;
-            margin: 10px;
-        }
-        .forecast-day p {
-            margin: 5px 0;
+            font-size: 24px;  /* Smaller size for tomorrow's forecast */
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -50,8 +43,8 @@
             <div class="temperature">--°C</div>
             <div class="description">Väntar på väderdata...</div>
         </div>
-        <div class="forecast" id="forecast">
-            <!-- 7-day forecast will be displayed here -->
+        <div id="forecast" class="forecast">
+            <!-- Tomorrow's forecast will be displayed here -->
         </div>
     </div>
 
@@ -63,6 +56,7 @@
 
         const emojiMap = {
             '1000': '☀️',  // Clear
+            '1001': '☁️',  // Cloudy
             '1100': '🌤️',  // Mostly Clear
             '1101': '🌥️',  // Partly Cloudy
             '1102': '☁️',  // Cloudy
@@ -94,38 +88,20 @@
                 console.log('API response:', data);
 
                 // Set current weather
-                const currentWeather = data.timelines.daily[0].values;
-                const temperature = Math.round(currentWeather.temperatureMax);  // Live current temperature (adjust as needed)
+                const currentWeather = data.timelines.daily[0].values;  // Today
+                const temperature = Math.round(currentWeather.temperatureMax);  // Current temperature
                 document.querySelector('#current-weather .temperature').textContent = `${temperature}°C`;
                 document.querySelector('#current-weather .emoji').textContent = emojiMap[currentWeather.weatherCodeMax] || '❓';
-                document.querySelector('#current-weather .description').textContent = 'Åleds nuvarande väder';
+                document.querySelector('#current-weather .description').textContent = 'Nuvarande väder i Åled';
 
-                // Set forecast (remove temperatures, just show emoji and day)
-                const forecastElement = document.getElementById('forecast');
-                forecastElement.innerHTML = ''; // Clear forecast first
+                // Set forecast for tomorrow
+                const tomorrowWeather = data.timelines.daily[1].values;  // Tomorrow
+                const tomorrowEmoji = emojiMap[tomorrowWeather.weatherCodeMax] || '❓';
+                const tomorrowDate = new Date(data.timelines.daily[1].time).toLocaleDateString('sv-SE', { weekday: 'long' });
 
-                data.timelines.daily.slice(1, 7).forEach((day, index) => {  // Start from tomorrow
-                    console.log(`Day ${index + 2} values:`, day.values);  // Log each day's data to inspect
-
-                    const forecastDay = document.createElement('div');
-                    forecastDay.classList.add('forecast-day');
-
-                    const weatherCode = day.values.weatherCodeMax;
-                    if (weatherCode && emojiMap[weatherCode]) {
-                        const weatherEmoji = emojiMap[weatherCode];
-                        const date = new Date(day.time).toLocaleDateString('sv-SE', { weekday: 'long' });
-
-                        forecastDay.innerHTML = `
-                            <p>${date}</p>
-                            <p class="emoji">${weatherEmoji}</p>
-                        `;
-                    } else {
-                        forecastDay.innerHTML = `
-                            <p>Ingen data</p>
-                        `;
-                    }
-                    forecastElement.appendChild(forecastDay);
-                });
+                document.querySelector('#forecast').innerHTML = `
+                    <p>Imorgon (${tomorrowDate}): ${tomorrowEmoji}</p>
+                `;
             } catch (error) {
                 console.error('Error fetching weather data:', error);
                 document.querySelector('#current-weather .description').textContent = 'Kunde inte hämta väderdata.';
