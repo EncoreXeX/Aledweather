@@ -93,14 +93,12 @@
                 const data = await response.json();
                 console.log('API response:', data);
 
-                // Log the full day.values to inspect its structure
+                // Use weatherCodeMax to get the weather condition
                 data.timelines.daily.slice(0, 7).forEach(day => {
-                    console.log('Full day.values:', day.values);  // Log day.values to inspect structure
-
                     const forecastDay = document.createElement('div');
                     forecastDay.classList.add('forecast-day');
 
-                    const weatherEmoji = emojiMap[day.values.weatherCode] || '❓';  // We will update this after logging
+                    const weatherEmoji = emojiMap[day.values.weatherCodeMax] || '❓';  // Use weatherCodeMax
                     const tempMin = Math.round(day.values.temperatureMin);
                     const tempMax = Math.round(day.values.temperatureMax);
                     const date = new Date(day.time).toLocaleDateString('sv-SE', { weekday: 'long' });
