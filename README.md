@@ -59,14 +59,16 @@
         const apiUrl = `https://www.metaweather.com/api/location/search/?query=Aled`;
 
         const emojiMap = {
-            'Clear': '☀️',
-            'Clouds': '☁️',
-            'Rain': '🌧️',
-            'Drizzle': '🌦️',
-            'Thunderstorm': '⛈️',
-            'Snow': '❄️',
-            'Mist': '🌫️',
-            'Fog': '🌫️'
+            'sn': '❄️', // Snow
+            'sl': '🌨️', // Sleet
+            'h': '🌧️',  // Hail
+            't': '⛈️',  // Thunderstorm
+            'hr': '🌧️', // Heavy Rain
+            'lr': '🌦️', // Light Rain
+            's': '🌦️',  // Showers
+            'hc': '☁️', // Heavy Cloud
+            'lc': '🌤️', // Light Cloud
+            'c': '☀️'   // Clear
         };
 
         async function fetchLocation() {
@@ -91,4 +93,36 @@
                 console.log('API response:', data);
 
                 const currentWeather = data.consolidated_weather[0];
-                document.query
+                document.querySelector('#current-weather .emoji').textContent = emojiMap[currentWeather.weather_state_abbr] || '❓';
+                document.querySelector('#current-weather .temperature').textContent = `${Math.round(currentWeather.the_temp)}°C`;
+                document.querySelector('#current-weather .description').textContent = currentWeather.weather_state_name;
+
+                const forecastElement = document.getElementById('forecast');
+                forecastElement.innerHTML = ''; // Clear forecast first
+
+                data.consolidated_weather.slice(1, 7).forEach(day => {
+                    const forecastDay = document.createElement('div');
+                    forecastDay.classList.add('forecast-day');
+
+                    const weatherEmoji = emojiMap[day.weather_state_abbr] || '❓';
+                    const tempMin = Math.round(day.min_temp);
+                    const tempMax = Math.round(day.max_temp);
+                    const date = new Date(day.applicable_date).toLocaleDateString('sv-SE', { weekday: 'long' });
+
+                    forecastDay.innerHTML = `
+                        <p>${date}</p>
+                        <p class="emoji">${weatherEmoji}</p>
+                        <p>${tempMin}°C / ${tempMax}°C</p>
+                    `;
+                    forecastElement.appendChild(forecastDay);
+                });
+            } catch (error) {
+                console.error('Error fetching weather data:', error);
+                document.querySelector('#current-weather .description').textContent = 'Kunde inte hämta väderdata.';
+            }
+        }
+
+        fetchLocation();
+    </script>
+</body>
+</html>
