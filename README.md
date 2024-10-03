@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="sv">
 <head>
     <meta charset="UTF-8" />
@@ -10,8 +9,8 @@
             background-color: #f0f0f0;
             display: flex;
             justify-content: center;
-            align-items: flex-start;  /* Align content higher */
-            padding-top: 20px;  /* Adjust this value to control vertical position */
+            align-items: flex-start;
+            padding-top: 20px;
             height: 100vh;
             margin: 0;
         }
@@ -19,7 +18,7 @@
             text-align: center;
             padding: 20px;
             border-radius: 10px;
-            background: linear-gradient(135deg, #1e3c72, #2a5298, #6dd5ed, #ffffff);  /* Gradient background */
+            background: linear-gradient(135deg, #1e3c72, #2a5298, #6dd5ed, #ffffff);
             background-size: cover;
             width: 1177px;
             height: 504px;
@@ -34,16 +33,16 @@
         .temperature {
             font-size: 100px;
             margin: 0;
-            color: white;  /* Adjust text color to ensure readability */
+            color: white;
         }
         .description {
             font-size: 24px;
-            color: white;  /* Adjust text color to ensure readability */
+            color: white;
         }
         .forecast {
             font-size: 24px;
             margin: 0;
-            color: white;  /* Adjust text color to ensure readability */
+            color: white;
         }
     </style>
 </head>
@@ -91,48 +90,44 @@
         };
 
         async function fetchWeather() {
-            let weatherData = await fetchWeatherWithRetry(500);  // Fetch with delay of 500ms
-            if (weatherData) {
-                const currentWeather = weatherData.timelines.daily[0].values;  // Today
-                const temperature = Math.round(currentWeather.temperatureMax);  // Current temperature
-                let weatherSymbol = symbolMap[currentWeather.weatherCodeMax] || '❓';
-
-                const cloudCover = currentWeather.cloudCoverAvg;
-                if (currentWeather.weatherCodeMax === 1000 && cloudCover > 3) {
-                    weatherSymbol = symbolMap['1100'];  // Mostly Clear if cloud cover > 3%
-                } else if (currentWeather.weatherCodeMax === 1000 && cloudCover > 50) {
-                    weatherSymbol = symbolMap['1101'];  // Partly Cloudy if cloud cover > 50%
-                }
-
-                document.querySelector('#current-weather .temperature').textContent = `${temperature}°C`;
-                document.querySelector('#current-weather .emoji').textContent = weatherSymbol;
-                document.querySelector('#current-weather .description').textContent = 'Nuvarande väder i Åled';
-
-                const tomorrowWeather = weatherData.timelines.daily[1].values;  // Tomorrow
-                const tomorrowSymbol = symbolMap[tomorrowWeather.weatherCodeMax] || '❓';
-                const tomorrowDate = new Date(weatherData.timelines.daily[1].time).toLocaleDateString('sv-SE', { weekday: 'long' });
-
-                document.querySelector('#forecast').innerHTML = `
-                    <p>Imorgon (${tomorrowDate}): ${tomorrowSymbol}</p>
-                `;
-            } else {
-                document.querySelector('#current-weather .description').textContent = 'Kunde inte hämta väderdata.';
-            }
-        }
-
-        async function fetchWeatherWithRetry(delay) {
             try {
-                await new Promise(resolve => setTimeout(resolve, delay));  // Add delay
                 const response = await fetch(apiUrl);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                const data = await response.json();
-                return data;
+                const weatherData = await response.json();
+                updateWeather(weatherData);
             } catch (error) {
                 console.error('Error fetching weather data:', error);
-                return null;
+                document.querySelector('#current-weather .description').textContent = 'Kunde inte hämta väderdata.';
             }
+        }
+
+        function updateWeather(weatherData) {
+            const currentWeather = weatherData.timelines.daily[0].values;  // Today
+            const temperature = currentWeather.temperatureMax.toFixed(1);  // Show 1 decimal
+            let weatherSymbol = symbolMap[currentWeather.weatherCodeMax] || '❓';
+
+            // Adjust based on cloud cover
+            const cloudCover = currentWeather.cloudCoverAvg;
+            if (currentWeather.weatherCodeMax === 1000 && cloudCover > 3) {
+                weatherSymbol = symbolMap['1100'];  // Mostly Clear if cloud cover > 3%
+            } else if (currentWeather.weatherCodeMax === 1000 && cloudCover > 50) {
+                weatherSymbol = symbolMap['1101'];  // Partly Cloudy if cloud cover > 50%
+            }
+
+            document.querySelector('#current-weather .temperature').textContent = `${temperature}°C`;
+            document.querySelector('#current-weather .emoji').textContent = weatherSymbol;
+            document.querySelector('#current-weather .description').textContent = 'Nuvarande väder i Åled';
+
+            // Forecast for tomorrow
+            const tomorrowWeather = weatherData.timelines.daily[1].values;
+            const tomorrowSymbol = symbolMap[tomorrowWeather.weatherCodeMax] || '❓';
+            const tomorrowDate = new Date(weatherData.timelines.daily[1].time).toLocaleDateString('sv-SE', { weekday: 'long' });
+
+            document.querySelector('#forecast').innerHTML = `
+                <p>Imorgon (${tomorrowDate}): ${tomorrowSymbol}</p>
+            `;
         }
 
         fetchWeather();
