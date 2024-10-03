@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="sv">
 <head>
     <meta charset="UTF-8" />
@@ -17,8 +16,8 @@
             text-align: center;
             padding: 20px;
             border-radius: 10px;
-            background: url('/mnt/data/Abstrakt bakgrund.jpg') no-repeat center center;  /* Background image */
-            background-size: cover;  /* Make sure the background covers the entire widget */
+            background: linear-gradient(135deg, #1e3c72, #2a5298, #6dd5ed, #ffffff);  /* Gradient background */
+            background-size: cover;
             width: 1177px;
             height: 504px;
             box-sizing: border-box;
