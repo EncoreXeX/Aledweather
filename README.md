@@ -138,8 +138,8 @@
                 let weatherEmoji = emojiMap[currentWeather.weatherCodeMax] || '❓';
 
                 const cloudCover = currentWeather.cloudCoverAvg;
-                if (currentWeather.weatherCodeMax === 1000 && cloudCover > 15) {
-                    weatherEmoji = emojiMap['1100'];  // Mostly Clear if cloud cover > 15%
+                if (currentWeather.weatherCodeMax === 1000 && cloudCover > 3) {
+                    weatherEmoji = emojiMap['1100'];  // Mostly Clear if cloud cover > 3%
                 } else if (currentWeather.weatherCodeMax === 1000 && cloudCover > 50) {
                     weatherEmoji = emojiMap['1101'];  // Partly Cloudy if cloud cover > 50%
                 }
