@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="sv">
 <head>
     <meta charset="UTF-8" />
@@ -11,8 +10,8 @@
             display: flex;
             justify-content: center;  /* Horizontally center content */
             align-items: flex-start;  /* Align content at the top */
-            padding-top: 5px;  /* Adjust this value to control how high the content appears */
-            height: 100vh;
+            padding-top: 0px;  /* Adjust this value to control how high the content appears */
+            height: 50vh;
             margin: 0;
         }
         .weather-widget {
@@ -21,7 +20,7 @@
             border-radius: 10px;
             background: linear-gradient(135deg, #1e3c72, #2a5298, #6dd5ed, #ffffff);  /* Gradient background */
             background-size: cover;
-            width: 1177px;
+            width: 1176px;
             height: 504px;
             box-sizing: border-box;
             display: flex;
