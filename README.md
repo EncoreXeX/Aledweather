@@ -8,14 +8,14 @@
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
             display: flex;
-            justify-content: center 20px;  /* Horizontally center content */
+            justify-content: center;  /* Horizontally center content */
             align-items: flex-start;  /* Align content at the top */
             padding-top: 0px;  /* Adjust this value to control how high the content appears */
             height: 0vh;
             margin: 0;
         }
         .weather-widget {
-            text-align: center;
+            text-align: center 20px;
             padding: 20px;
             border-radius: 10px;
             background: linear-gradient(135deg, #1e3c72, #2a5298, #6dd5ed, #ffffff);  /* Gradient background */
