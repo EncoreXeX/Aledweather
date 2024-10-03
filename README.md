@@ -56,58 +56,52 @@
     </div>
 
     <script>
-        const apiUrl = `https://www.metaweather.com/api/location/search/?query=Aled`;
+        const apiKey = '2oASoLPd1jV7TVoLkhY0RjTmpG2HZ7Gf';  // Your Tomorrow.io API key
+        const lat = 56.8667;  // Latitude for Åled, Sweden
+        const lon = 12.8917;  // Longitude for Åled, Sweden
+        const apiUrl = `https://api.tomorrow.io/v4/weather/forecast?location=${lat},${lon}&apikey=${apiKey}`;
 
         const emojiMap = {
-            'sn': '❄️', // Snow
-            'sl': '🌨️', // Sleet
-            'h': '🌧️',  // Hail
-            't': '⛈️',  // Thunderstorm
-            'hr': '🌧️', // Heavy Rain
-            'lr': '🌦️', // Light Rain
-            's': '🌦️',  // Showers
-            'hc': '☁️', // Heavy Cloud
-            'lc': '🌤️', // Light Cloud
-            'c': '☀️'   // Clear
+            'clear': '☀️',
+            'cloudy': '☁️',
+            'rain': '🌧️',
+            'snow': '❄️',
+            'fog': '🌫️',
+            'wind': '💨',
+            'thunderstorm': '⛈️'
         };
 
-        async function fetchLocation() {
+        async function fetchWeather() {
             try {
                 const response = await fetch(apiUrl);
-                const locations = await response.json();
-                if (locations.length === 0) throw new Error('No location found');
-                
-                const locationId = locations[0].woeid;
-                fetchWeather(locationId);
-            } catch (error) {
-                console.error('Error fetching location data:', error);
-                document.querySelector('#current-weather .description').textContent = 'Kunde inte hämta platsdata.';
-            }
-        }
-
-        async function fetchWeather(locationId) {
-            try {
-                const weatherUrl = `https://www.metaweather.com/api/location/${locationId}/`;
-                const response = await fetch(weatherUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 const data = await response.json();
                 console.log('API response:', data);
 
-                const currentWeather = data.consolidated_weather[0];
-                document.querySelector('#current-weather .emoji').textContent = emojiMap[currentWeather.weather_state_abbr] || '❓';
-                document.querySelector('#current-weather .temperature').textContent = `${Math.round(currentWeather.the_temp)}°C`;
-                document.querySelector('#current-weather .description').textContent = currentWeather.weather_state_name;
+                // Assuming the structure of Tomorrow.io's response
+                const currentWeather = data.timelines.daily[0].values;
+                const weatherCode = currentWeather.weatherCode;
+                const temperature = currentWeather.temperature;
 
+                const emoji = emojiMap[weatherCode] || '❓';
+                document.querySelector('#current-weather .emoji').textContent = emoji;
+                document.querySelector('#current-weather .temperature').textContent = `${Math.round(temperature)}°C`;
+                document.querySelector('#current-weather .description').textContent = currentWeather.weatherDescription || 'Ingen beskrivning tillgänglig';
+
+                // Set forecast
                 const forecastElement = document.getElementById('forecast');
                 forecastElement.innerHTML = ''; // Clear forecast first
 
-                data.consolidated_weather.slice(1, 7).forEach(day => {
+                data.timelines.daily.slice(0, 7).forEach(day => {
                     const forecastDay = document.createElement('div');
                     forecastDay.classList.add('forecast-day');
 
-                    const weatherEmoji = emojiMap[day.weather_state_abbr] || '❓';
-                    const tempMin = Math.round(day.min_temp);
-                    const tempMax = Math.round(day.max_temp);
-                    const date = new Date(day.applicable_date).toLocaleDateString('sv-SE', { weekday: 'long' });
+                    const weatherEmoji = emojiMap[day.values.weatherCode] || '❓';
+                    const tempMin = Math.round(day.values.temperatureMin);
+                    const tempMax = Math.round(day.values.temperatureMax);
+                    const date = new Date(day.time).toLocaleDateString('sv-SE', { weekday: 'long' });
 
                     forecastDay.innerHTML = `
                         <p>${date}</p>
@@ -122,7 +116,7 @@
             }
         }
 
-        fetchLocation();
+        fetchWeather();
     </script>
 </body>
 </html>
