@@ -62,13 +62,26 @@
         const apiUrl = `https://api.tomorrow.io/v4/weather/forecast?location=${lat},${lon}&apikey=${apiKey}`;
 
         const emojiMap = {
-            'clear': '☀️',
-            'cloudy': '☁️',
-            'rain': '🌧️',
-            'snow': '❄️',
-            'fog': '🌫️',
-            'wind': '💨',
-            'thunderstorm': '⛈️'
+            '1000': '☀️',  // Clear
+            '1100': '🌤️',  // Mostly Clear
+            '1101': '🌥️',  // Partly Cloudy
+            '1102': '☁️',  // Cloudy
+            '4000': '🌧️',  // Drizzle
+            '4001': '🌧️',  // Rain
+            '4200': '🌦️',  // Light Rain
+            '4201': '🌧️',  // Heavy Rain
+            '5000': '❄️',  // Snow
+            '5001': '❄️',  // Flurries
+            '5100': '🌨️',  // Light Snow
+            '5101': '❄️',  // Heavy Snow
+            '6000': '🌫️',  // Freezing Drizzle
+            '6001': '🌧️',  // Freezing Rain
+            '6200': '🌧️',  // Light Freezing Rain
+            '6201': '🌧️',  // Heavy Freezing Rain
+            '7000': '🌫️',  // Ice Pellets
+            '7101': '🌨️',  // Heavy Ice Pellets
+            '7102': '🌨️',  // Light Ice Pellets
+            '8000': '⛈️'   // Thunderstorm
         };
 
         async function fetchWeather() {
@@ -80,21 +93,21 @@
                 const data = await response.json();
                 console.log('API response:', data);
 
-                // Assuming the structure of Tomorrow.io's response
+                // Log the weather codes to see what Tomorrow.io returns
                 const currentWeather = data.timelines.daily[0].values;
-                const weatherCode = currentWeather.weatherCode;
-                const temperature = currentWeather.temperature;
+                console.log('Current weather code:', currentWeather.weatherCode);
 
-                const emoji = emojiMap[weatherCode] || '❓';
-                document.querySelector('#current-weather .emoji').textContent = emoji;
+                // Assuming temperature is working
+                const temperature = currentWeather.temperature;
                 document.querySelector('#current-weather .temperature').textContent = `${Math.round(temperature)}°C`;
-                document.querySelector('#current-weather .description').textContent = currentWeather.weatherDescription || 'Ingen beskrivning tillgänglig';
 
                 // Set forecast
                 const forecastElement = document.getElementById('forecast');
                 forecastElement.innerHTML = ''; // Clear forecast first
 
                 data.timelines.daily.slice(0, 7).forEach(day => {
+                    console.log('Forecast weather code:', day.values.weatherCode);  // Log weather codes for each day
+
                     const forecastDay = document.createElement('div');
                     forecastDay.classList.add('forecast-day');
 
